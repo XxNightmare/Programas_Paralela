@@ -17,7 +17,7 @@ public class MergeSortGUI extends JFrame implements ActionListener {
 
     private JLabel titleLabel, inputLabel, outputLabel, txtlabel, txtlabel_2, txtlabel_3, txtlabel_4;
     private JTextArea inputTextArea, outputTextArea, TextAreaArreglo;
-    private JButton registerButton, executeButton, clearButton, serviceButton, joinButton;
+    private JButton Btnr, Btnn, clearButton, Btnes, Btnj;
     private ArrayList<Integer> dataList;
     private ForJoin fj;
 
@@ -68,25 +68,25 @@ public class MergeSortGUI extends JFrame implements ActionListener {
         panel.add(scrollPane2);
 
         // Configuración de los botones
-        registerButton = new JButton("Registrar");
-        registerButton.addActionListener(this);
-        panel.add(registerButton);
+        Btnr = new JButton("Registrar");
+        Btnr.addActionListener(this);
+        panel.add(Btnr);
 
-        executeButton = new JButton("Ejecutar Metodo MergeSort");
-        executeButton.addActionListener(this);
-        panel.add(executeButton);
+        Btnn = new JButton("Ejecutar Metodo MergeSort");
+        Btnn.addActionListener(this);
+        panel.add(Btnn);
 
         clearButton = new JButton("Limpiar");
         clearButton.addActionListener(this);
         panel.add(clearButton);
 
-        serviceButton = new JButton("Execute Service");
-        serviceButton.addActionListener(this);
-        panel.add(serviceButton);
+        Btnes = new JButton("Execute Service");
+        Btnes.addActionListener(this);
+        panel.add(Btnes);
 
-        joinButton = new JButton("For Join");
-        joinButton.addActionListener(this);
-        panel.add(joinButton);
+        Btnj = new JButton("For Join");
+        Btnj.addActionListener(this);
+        panel.add(Btnj);
 
         // Configuración del título
         titleLabel = new JLabel();
@@ -128,7 +128,7 @@ public class MergeSortGUI extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         // Registrar un nuevo dato en la lista
-        if (e.getSource() == registerButton) {
+        if (e.getSource() == Btnr) {
             dataList = new ArrayList<>();
             String input = inputTextArea.getText().trim();
             try {
@@ -151,7 +151,7 @@ public class MergeSortGUI extends JFrame implements ActionListener {
         }
 
         // Realizar el algoritmo Merge Sort y mostrar el resultado
-        if (e.getSource() == joinButton) {
+        if (e.getSource() == Btnj) {
             if (dataList.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Por favor ingrese al menos un dato", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
@@ -176,7 +176,7 @@ public class MergeSortGUI extends JFrame implements ActionListener {
         }
 
         // Ejecutar un Execute Service
-        if (e.getSource() == serviceButton) {
+        if (e.getSource() == Btnes) {
             if (dataList.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Por favor ingrese al menos un dato", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
@@ -191,6 +191,7 @@ public class MergeSortGUI extends JFrame implements ActionListener {
 
                 // Ejecutar ordenamiento
                 ExecutorService executor = Executors.newSingleThreadExecutor();
+                //  Future representa un resultado pendiente de una tarea en segundo plano
                 Future<int[]> future = executor.submit(executeService);
 
                 // Obtener el arreglo ordenado del Future
@@ -208,7 +209,7 @@ public class MergeSortGUI extends JFrame implements ActionListener {
         }
 
         // Unirse a un For Join
-        if (e.getSource() == executeButton) {
+        if (e.getSource() == Btnn) {
             if (dataList.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Por favor ingrese al menos un dato", "Error", JOptionPane.ERROR_MESSAGE);
             } else {

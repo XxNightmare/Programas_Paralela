@@ -9,13 +9,18 @@ import java.util.concurrent.TimeUnit;
 public class PalindromeCounter {
 
     private final String texto;
+    private List<PalindromeTask> tareasPalindromos;
 
     public PalindromeCounter(String texto) {
         this.texto = texto;
     }
 
+    public List<PalindromeTask> getTareasPalindromos() {
+        return tareasPalindromos;
+    }
+
     public void calcularPalindromos() {
-        List<PalindromeTask> tareasPalindromos = new ArrayList<>();
+        tareasPalindromos = new ArrayList<>();
         String[] palabras = texto.split("\\s+");
         for (String palabra : palabras) {
             PalindromeTask tarea = new PalindromeTask(palabra);
@@ -28,13 +33,5 @@ public class PalindromeCounter {
             e.printStackTrace();
         }
         executor.shutdown();
-        int contador = 0;
-        for (PalindromeTask tarea : tareasPalindromos) {
-            if (tarea.esPalindromo()) {
-                contador++;
-                System.out.println(contador+")" + tarea.getPalabra());
-            }
-        }
-        System.out.println("Se encontraron " + contador + " palindromos en el texto.");
     }
 }

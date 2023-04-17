@@ -3,7 +3,7 @@ package Normal;
 import java.util.ArrayList;
 import java.util.List;
 
-class PalindromeAnalyzer {
+public class PalindromeAnalyzer {
 
     public List<String> getPalindromeWords(List<String> words) {
         // Analiza las palabras y devuelve una lista de palabras palíndromas

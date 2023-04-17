@@ -1,4 +1,8 @@
-
+import ExecuteService.PalindromeTask;
+import ForJoin.PalindromeCounterTask;
+import ForJoin.PalindromeResult;
+import Normal.PalindromeAnalyzer;
+import Normal.TextAnalyzer;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -12,12 +16,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 
+// 
 public class PalindromosMain extends JFrame implements ActionListener {
 
     private JLabel inputLabel, titleLabel, outputLabel, txtlabel, txtNormal, txtExecuteService, txtForJoin;
     private JTextArea Cant_pal_enc, pal_enc, inputTextArea, TextAreaArreglo;
-    private JButton registerButton, executeButton, clearButton, serviceButton, joinButton;
+    private JButton NormalButton, clearButton, executeButton, joinButton;
+
+    private static final ForkJoinPool pool = new ForkJoinPool();
 
     public PalindromosMain() {
         // Configuración de la ventana
@@ -44,7 +52,7 @@ public class PalindromosMain extends JFrame implements ActionListener {
         inputTextArea = new JTextArea();
         JScrollPane scrollPane1 = new JScrollPane(inputTextArea);
         panel.add(scrollPane1);
-        
+
         // -------------------------------------------------------------------------------
         outputLabel = new JLabel("Cantidad de Palabras Palindromas encontradas:");
         panel.add(outputLabel);
@@ -52,7 +60,7 @@ public class PalindromosMain extends JFrame implements ActionListener {
         Cant_pal_enc = new JTextArea();
         JScrollPane scrollPane2 = new JScrollPane(Cant_pal_enc);
         panel.add(scrollPane2);
-        
+
         // -------------------------------------------------------------------------------
         outputLabel = new JLabel("Palabras Palindromas encontradas:");
         panel.add(outputLabel);
@@ -62,31 +70,22 @@ public class PalindromosMain extends JFrame implements ActionListener {
         JScrollPane scrollPane3 = new JScrollPane(pal_enc);
         panel.add(scrollPane3);
         // -------------------------------------------------------------------------------
-
         // Configuración de los botones
-        registerButton = new JButton("Registrar");
-        registerButton.addActionListener(this);
-        panel.add(registerButton);
-
-        executeButton = new JButton("Buscar por metodo normal");
-        executeButton.addActionListener(this);
-        panel.add(executeButton);
+        NormalButton = new JButton("Metodo normal");
+        NormalButton.addActionListener(this);
+        panel.add(NormalButton);
 
         clearButton = new JButton("Limpiar");
         clearButton.addActionListener(this);
         panel.add(clearButton);
 
-        serviceButton = new JButton("Execute Service");
-        serviceButton.addActionListener(this);
-        panel.add(serviceButton);
+        executeButton = new JButton("Execute Service");
+        executeButton.addActionListener(this);
+        panel.add(executeButton);
 
         joinButton = new JButton("For Join");
         joinButton.addActionListener(this);
         panel.add(joinButton);
-
-        // Configuración del título
-        titleLabel = new JLabel();
-        panel.add(titleLabel);
 
         // Configuración del label de salida
         txtlabel = new JLabel("Tiempo Normal:");
@@ -101,16 +100,16 @@ public class PalindromosMain extends JFrame implements ActionListener {
         panel.add(txtlabel);
 
         // Configuración del label de salida
-        txtExecuteService = new JLabel();
-        panel.add(txtExecuteService);
+        txtForJoin = new JLabel();
+        panel.add(txtForJoin);
 
         // Configuración del label de salida
         txtlabel = new JLabel("Tiempo Execute Service:");
         panel.add(txtlabel);
 
         // Configuración del label de salida
-        txtForJoin = new JLabel();
-        panel.add(txtForJoin);
+        txtExecuteService = new JLabel();
+        panel.add(txtExecuteService);
 
         // Agregar el panel a la ventana
         add(panel);
@@ -123,30 +122,70 @@ public class PalindromosMain extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // Registrar un nuevo dato en la lista
-        if (e.getSource() == registerButton) {
-            JOptionPane.showMessageDialog(this, "DATOS AGREGADOS EXITOSAMENTE");
+        // Normal
+        if (e.getSource() == NormalButton) {
+            String input = inputTextArea.getText().trim();
+            // Separa el texto en palabras y las almacena en una lista
+            long tiempo1 = System.currentTimeMillis();
+            TextAnalyzer analyzer = new TextAnalyzer();
+            java.util.List<String> words = analyzer.getWords(input);
+
+            // Analiza las palabras y cuenta las palíndromas
+            PalindromeAnalyzer palindromeAnalyzer = new PalindromeAnalyzer();
+            java.util.List<String> palindromeWords = palindromeAnalyzer.getPalindromeWords(words);
+
+            // Imprime los resultados
+            Cant_pal_enc.setText(String.valueOf(palindromeWords.size()));
+            if (palindromeWords.isEmpty()) {
+                pal_enc.setText("ninguna");
+                JOptionPane.showMessageDialog(this, "No hay palindromos en esta oracion", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                pal_enc.setText(String.join(", ", palindromeWords));
+                JOptionPane.showMessageDialog(this, "MOSTRANDO DATOS");
+            }
+            long tiempo2 = System.currentTimeMillis() - tiempo1;
+            txtNormal.setText(String.valueOf(tiempo2 + " Milisegundos"));
         }
 
-        // Realizar el algoritmo Merge Sort y mostrar el resultado
-        if (e.getSource() == joinButton) {
-            JOptionPane.showMessageDialog(this, "MOSTRANDO DATOS");
-        }
-
-        // Limpiar los text areas
+        // Limpiar
         if (e.getSource() == clearButton) {
             JOptionPane.showMessageDialog(this, "LIMPIANDO");
             inputTextArea.setText("");
         }
 
-        // Ejecutar un Execute Service
-        if (e.getSource() == serviceButton) {
-            JOptionPane.showMessageDialog(this, "Por favor ingrese al menos un dato", "Error", JOptionPane.ERROR_MESSAGE);
+        // Execute Service
+        if (e.getSource() == executeButton) {
+            String input = inputTextArea.getText().trim();
+            String Texto = "";
+            long tiempo1 = System.currentTimeMillis();
+            // Mandar a llamar la funcion
+            ExecuteService.PalindromeCounter contador = new ExecuteService.PalindromeCounter(input);
+            contador.calcularPalindromos();
+            // Imprimir datos
+            int cont = 0;
+            for (PalindromeTask tarea : contador.getTareasPalindromos()) {
+                if (tarea.esPalindromo()) {
+                    cont++;
+                    Texto = tarea.getPalabra() + "," + Texto;
+                }
+            }
+            pal_enc.setText(Texto);
+            Cant_pal_enc.setText(String.valueOf(cont));
+            long tiempo2 = System.currentTimeMillis() - tiempo1;
+            txtExecuteService.setText(String.valueOf(tiempo2 + " Milisegundos"));
+            JOptionPane.showMessageDialog(this, "MOSTRANDO DATOS");
         }
 
-        // Unirse a un For Join
-        if (e.getSource() == executeButton) {
-            JOptionPane.showMessageDialog(this, "Por favor ingrese al menos un dato", "Error", JOptionPane.ERROR_MESSAGE);
+        // For Join
+        if (e.getSource() == joinButton) {
+            String input = inputTextArea.getText().trim();
+            long tiempo1 = System.currentTimeMillis();
+            PalindromeResult result = pool.invoke(new PalindromeCounterTask(input));
+            long tiempo2 = System.currentTimeMillis() - tiempo1;
+            txtForJoin.setText(String.valueOf(tiempo2 + " Milisegundos"));
+            Cant_pal_enc.setText(String.valueOf(result.getCount()));
+            pal_enc.setText(String.valueOf(result.getWords()));
+            JOptionPane.showMessageDialog(this, "MOSTRANDO DATOS");
         }
     }
 }
