@@ -1,8 +1,8 @@
 import ExecuteService.PalindromeTask;
 import ForJoin.PalindromeCounterTask;
 import ForJoin.PalindromeResult;
-import Normal.PalindromeAnalyzer;
-import Normal.TextAnalyzer;
+import Normal.Analisis_palindromos_normal;
+import Normal.Analisis_texto_normal;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -125,13 +125,12 @@ public class PalindromosMain extends JFrame implements ActionListener {
         // Normal
         if (e.getSource() == NormalButton) {
             String input = inputTextArea.getText().trim();
-            // Separa el texto en palabras y las almacena en una lista
             long tiempo1 = System.currentTimeMillis();
-            TextAnalyzer analyzer = new TextAnalyzer();
+            Analisis_texto_normal analyzer = new Analisis_texto_normal();
+            // Separa el texto en palabras y las almacena en una lista
             java.util.List<String> words = analyzer.getWords(input);
-
             // Analiza las palabras y cuenta las palíndromas
-            PalindromeAnalyzer palindromeAnalyzer = new PalindromeAnalyzer();
+            Analisis_palindromos_normal palindromeAnalyzer = new Analisis_palindromos_normal();
             java.util.List<String> palindromeWords = palindromeAnalyzer.getPalindromeWords(words);
 
             // Imprime los resultados
