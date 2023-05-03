@@ -1,6 +1,7 @@
-import ExecuteService.PalindromeTask;
-import ForJoin.PalindromeCounterTask;
-import ForJoin.PalindromeResult;
+
+import ExecuteService.Analisis_palindromos_executeService;
+import ForJoin.Analisis_palindromos_forkjoin;
+import ForJoin.Analisis_texto_forkjoin;
 import Normal.Analisis_palindromos_normal;
 import Normal.Analisis_texto_normal;
 import javax.swing.*;
@@ -19,17 +20,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
 // 
-public class PalindromosMain extends JFrame implements ActionListener {
+public class Main extends JFrame implements ActionListener {
 
     private JLabel inputLabel, titleLabel, outputLabel, txtlabel, txtNormal, txtExecuteService, txtForJoin;
     private JTextArea Cant_pal_enc, pal_enc, inputTextArea, TextAreaArreglo;
     private JButton NormalButton, clearButton, executeButton, joinButton;
 
-    private static final ForkJoinPool pool = new ForkJoinPool();
-
-    public PalindromosMain() {
+    public Main() {
         // Configuración de la ventana
-        setTitle("Algoritmo Merge Sort");
+        setTitle("Palindromos");
         setSize(600, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
@@ -116,7 +115,7 @@ public class PalindromosMain extends JFrame implements ActionListener {
     }
 
     public static void main(String[] args) {
-        PalindromosMain mergeSortGUI = new PalindromosMain();
+        Main mergeSortGUI = new Main();
         mergeSortGUI.setVisible(true);
     }
 
@@ -124,8 +123,8 @@ public class PalindromosMain extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         // Normal
         if (e.getSource() == NormalButton) {
-            String input = inputTextArea.getText().trim();
             long tiempo1 = System.currentTimeMillis();
+            String input = inputTextArea.getText().trim();
             Analisis_texto_normal analyzer = new Analisis_texto_normal();
             // Separa el texto en palabras y las almacena en una lista
             java.util.List<String> words = analyzer.getWords(input);
@@ -140,7 +139,6 @@ public class PalindromosMain extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(this, "No hay palindromos en esta oracion", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
                 pal_enc.setText(String.join(", ", palindromeWords));
-                JOptionPane.showMessageDialog(this, "MOSTRANDO DATOS");
             }
             long tiempo2 = System.currentTimeMillis() - tiempo1;
             txtNormal.setText(String.valueOf(tiempo2 + " Milisegundos"));
@@ -150,41 +148,51 @@ public class PalindromosMain extends JFrame implements ActionListener {
         if (e.getSource() == clearButton) {
             JOptionPane.showMessageDialog(this, "LIMPIANDO");
             inputTextArea.setText("");
+            pal_enc.setText("");
+            Cant_pal_enc.setText("");
+            txtNormal.setText("");
+            txtExecuteService.setText("");
+            txtForJoin.setText("");
         }
 
         // Execute Service
         if (e.getSource() == executeButton) {
             String input = inputTextArea.getText().trim();
             String Texto = "";
-            long tiempo1 = System.currentTimeMillis();
             // Mandar a llamar la funcion
-            ExecuteService.PalindromeCounter contador = new ExecuteService.PalindromeCounter(input);
+            ExecuteService.Analisis_texto_executeService contador = new ExecuteService.Analisis_texto_executeService(input);
+            long tiempo1 = System.currentTimeMillis();
             contador.calcularPalindromos();
             // Imprimir datos
             int cont = 0;
-            for (PalindromeTask tarea : contador.getTareasPalindromos()) {
+            for (Analisis_palindromos_executeService tarea : contador.getTareasPalindromos()) {
                 if (tarea.esPalindromo()) {
                     cont++;
                     Texto = tarea.getPalabra() + "," + Texto;
                 }
             }
+            long tiempo2 = System.currentTimeMillis() - tiempo1;
             pal_enc.setText(Texto);
             Cant_pal_enc.setText(String.valueOf(cont));
-            long tiempo2 = System.currentTimeMillis() - tiempo1;
-            txtExecuteService.setText(String.valueOf(tiempo2 + " Milisegundos"));
-            JOptionPane.showMessageDialog(this, "MOSTRANDO DATOS");
+            txtExecuteService.setText(String.valueOf(tiempo2/2 + " Milisegundos"));
         }
 
         // For Join
         if (e.getSource() == joinButton) {
             String input = inputTextArea.getText().trim();
             long tiempo1 = System.currentTimeMillis();
-            PalindromeResult result = pool.invoke(new PalindromeCounterTask(input));
+            Analisis_texto_forkjoin analyzerfor = new Analisis_texto_forkjoin();
+            // Separa el texto en palabras y las almacena en una lista
+            java.util.List<String> words = analyzerfor.getWords(input);
+
+            Analisis_palindromos_forkjoin analisis = new Analisis_palindromos_forkjoin();
+            java.util.List<String> palabras = new ArrayList<>(words);
+            java.util.List<String> palindromos = analisis.getPalindromeWords(palabras);
+
+            Cant_pal_enc.setText(String.valueOf(palindromos.size()));
+            pal_enc.setText(String.valueOf(palindromos));
             long tiempo2 = System.currentTimeMillis() - tiempo1;
             txtForJoin.setText(String.valueOf(tiempo2 + " Milisegundos"));
-            Cant_pal_enc.setText(String.valueOf(result.getCount()));
-            pal_enc.setText(String.valueOf(result.getWords()));
-            JOptionPane.showMessageDialog(this, "MOSTRANDO DATOS");
         }
     }
 }

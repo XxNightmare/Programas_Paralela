@@ -2,17 +2,13 @@ package ExecuteService;
 
 import java.util.concurrent.Callable;
 
-public class PalindromeTask implements Callable<String> {
-
+public class Analisis_palindromos_executeService implements Callable<String> {
     private final String palabra;
     private boolean esPalindromo;
 
-    public PalindromeTask(String palabra) {
+    public Analisis_palindromos_executeService(String palabra) {
         this.palabra = palabra;
         this.esPalindromo = false;
-        if (palabra.length() < 2) {
-            this.esPalindromo = false;
-        }
     }
 
     @Override
@@ -24,10 +20,12 @@ public class PalindromeTask implements Callable<String> {
         return "";
     }
 
+    // Crea un método getter para obtener el estado de 'esPalindromo'.
     public boolean esPalindromo() {
         return esPalindromo;
     }
 
+    // Crea un método getter para obtener la palabra.
     public String getPalabra() {
         return palabra;
     }
