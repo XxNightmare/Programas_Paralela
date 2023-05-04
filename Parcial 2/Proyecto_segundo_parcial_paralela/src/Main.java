@@ -38,6 +38,7 @@ public class Main extends JFrame implements ActionListener {
 
         // Configuración del título
         titleLabel = new JLabel("Identificar los palindromos de una oracion", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Serif", Font.PLAIN, 17));
         panel.add(titleLabel);
 
         // Configuración del título
@@ -46,68 +47,86 @@ public class Main extends JFrame implements ActionListener {
 
         // -------------------------------------------------------------------------------
         inputLabel = new JLabel("Escribe una oracion:");
+        inputLabel.setFont(new Font("Serif", Font.PLAIN, 17));
         panel.add(inputLabel);
 
         inputTextArea = new JTextArea();
+        inputTextArea.setFont(new Font("Serif", Font.PLAIN, 20));
         JScrollPane scrollPane1 = new JScrollPane(inputTextArea);
         panel.add(scrollPane1);
 
         // -------------------------------------------------------------------------------
-        outputLabel = new JLabel("Cantidad de Palabras Palindromas encontradas:");
+        outputLabel = new JLabel("Cantidad de Palabras:");
+        outputLabel.setFont(new Font("Serif", Font.PLAIN, 17));
         panel.add(outputLabel);
 
         Cant_pal_enc = new JTextArea();
+        Cant_pal_enc.enable(false);
+        Cant_pal_enc.setFont(new Font("Serif", Font.PLAIN, 25));
         JScrollPane scrollPane2 = new JScrollPane(Cant_pal_enc);
         panel.add(scrollPane2);
 
         // -------------------------------------------------------------------------------
         outputLabel = new JLabel("Palabras Palindromas encontradas:");
+        outputLabel.setFont(new Font("Serif", Font.PLAIN, 17));
         panel.add(outputLabel);
 
         // Configuración del text area de salida
         pal_enc = new JTextArea();
+        pal_enc.enable(false);
+        pal_enc.setFont(new Font("Serif", Font.PLAIN, 20));
         JScrollPane scrollPane3 = new JScrollPane(pal_enc);
         panel.add(scrollPane3);
         // -------------------------------------------------------------------------------
         // Configuración de los botones
         NormalButton = new JButton("Metodo normal");
+        NormalButton.setFont(new Font("Serif", Font.PLAIN, 17));
         NormalButton.addActionListener(this);
         panel.add(NormalButton);
 
         clearButton = new JButton("Limpiar");
+        clearButton.setFont(new Font("Serif", Font.PLAIN, 17));
         clearButton.addActionListener(this);
         panel.add(clearButton);
 
         executeButton = new JButton("Execute Service");
+        executeButton.setFont(new Font("Serif", Font.PLAIN, 17));
         executeButton.addActionListener(this);
         panel.add(executeButton);
 
         joinButton = new JButton("For Join");
+        joinButton.setFont(new Font("Serif", Font.PLAIN, 17));
         joinButton.addActionListener(this);
         panel.add(joinButton);
 
         // Configuración del label de salida
         txtlabel = new JLabel("Tiempo Normal:");
+        txtlabel.setFont(new Font("Serif", Font.PLAIN, 17));
         panel.add(txtlabel);
 
         // Configuración del label de salida
         txtNormal = new JLabel();
+        txtNormal.setFont(new Font("Serif", Font.PLAIN, 20));
         panel.add(txtNormal);
 
         // Configuración del label de salida
         txtlabel = new JLabel("Tiempo ForJoin:");
+        txtlabel.setFont(new Font("Serif", Font.PLAIN, 17));
         panel.add(txtlabel);
 
         // Configuración del label de salida
         txtForJoin = new JLabel();
+        txtForJoin.setFont(new Font("Serif", Font.PLAIN, 20));
         panel.add(txtForJoin);
 
         // Configuración del label de salida
         txtlabel = new JLabel("Tiempo Execute Service:");
+        txtlabel.setFont(new Font("Serif", Font.PLAIN, 17));
         panel.add(txtlabel);
 
         // Configuración del label de salida
         txtExecuteService = new JLabel();
+        txtExecuteService.setFont(new Font("Serif", Font.PLAIN, 20));
         panel.add(txtExecuteService);
 
         // Agregar el panel a la ventana

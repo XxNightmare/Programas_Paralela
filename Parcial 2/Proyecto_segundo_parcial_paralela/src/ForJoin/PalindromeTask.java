@@ -18,8 +18,8 @@ import java.util.concurrent.RecursiveTask;
             if (words.size() <= 10) {
                 List<String> palindromeWords = new ArrayList<>();
                 for (String word : words) {
-                    System.out.println("");
                     if (analisis_palindromos_forkjoin.isPalindrome(word)) {
+                        System.out.println("");
                         palindromeWords.add(word);
                     }
                 }
