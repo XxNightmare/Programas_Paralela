@@ -1,8 +1,11 @@
 package Cliente;
 
-public class Calculadora {
-    private double numero1;
-    private char operacion;
+import java.io.Serializable;
+
+public class Calculadora implements Serializable {
+
+    public double numero1;
+    public char operacion;
 
     public void setNumero1(double numero1) {
         this.numero1 = numero1;

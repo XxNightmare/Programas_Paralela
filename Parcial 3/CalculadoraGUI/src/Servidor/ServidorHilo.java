@@ -7,7 +7,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class ServidorHilo implements Runnable {
-    private Socket socket;
+
+    public Socket socket;
 
     public ServidorHilo(Socket socket) {
         this.socket = socket;

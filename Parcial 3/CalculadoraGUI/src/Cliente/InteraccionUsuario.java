@@ -6,8 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class InteraccionUsuario implements ActionListener {
-    private JTextField display;
-    private Calculadora calculadora;
+
+    public JTextField display;
+    public Calculadora calculadora;
 
     public InteraccionUsuario(JTextField display, Calculadora calculadora) {
         this.display = display;

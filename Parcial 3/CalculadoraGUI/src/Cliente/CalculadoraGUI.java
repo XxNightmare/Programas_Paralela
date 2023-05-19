@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class CalculadoraGUI extends JFrame {
+
     private JTextField display;
     private Calculadora calculadora;
     private InteraccionUsuario interaccionUsuario;
@@ -26,10 +27,10 @@ public class CalculadoraGUI extends JFrame {
         panelBotones.setLayout(new GridLayout(5, 3));
 
         String[] labels = {
-                "7", "8", "9", "/",
-                "4", "5", "6", "*",
-                "1", "2", "3", "-",
-                "0", ".", "=", "+"
+            "7", "8", "9", "/",
+            "4", "5", "6", "*",
+            "1", "2", "3", "-",
+            "0", ".", "=", "+"
         };
 
         for (String label : labels) {
