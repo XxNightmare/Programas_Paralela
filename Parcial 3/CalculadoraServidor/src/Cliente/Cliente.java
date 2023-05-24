@@ -1,6 +1,5 @@
 package Cliente;
 
-import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,116 +9,107 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
-public class Cliente {
-    private Socket socket;
+public class Cliente extends JFrame implements ActionListener {
+    private JTextField textField;
+    private JButton guardarBtn, sumarBtn, restarBtn, multiplicarBtn, dividirBtn;
+    private JLabel resultadoLabel;
     private DataInputStream entrada;
     private DataOutputStream salida;
-    private JFrame frame;
-    private JTextField numeroTextField;
-    private JButton sumaButton;
-    private JButton restaButton;
-    private JButton multiplicacionButton;
-    private JButton divisionButton;
-    private JLabel resultadoLabel;
+    private static Socket socket;
 
-    public static void main(String[] args) {
-        Cliente cliente = new Cliente();
-        cliente.iniciar();
+    public Cliente() {
+        // Configurar la ventana
+        setTitle("Calculadora");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(300, 200);
+        setLayout(new FlowLayout());
+
+        // Crear el JLabel inicial
+        JLabel tituloLabel = new JLabel("Calculadora");
+        add(tituloLabel);
+
+        // Crear el JTextField
+        textField = new JTextField(10);
+        add(textField);
+
+        // Crear los botones
+        guardarBtn = new JButton("Guardar");
+        guardarBtn.addActionListener(this);
+        add(guardarBtn);
+
+        sumarBtn = new JButton("Sumar");
+        sumarBtn.addActionListener(this);
+        add(sumarBtn);
+
+        restarBtn = new JButton("Restar");
+        restarBtn.addActionListener(this);
+        add(restarBtn);
+
+        multiplicarBtn = new JButton("Multiplicar");
+        multiplicarBtn.addActionListener(this);
+        add(multiplicarBtn);
+
+        dividirBtn = new JButton("Dividir");
+        dividirBtn.addActionListener(this);
+        add(dividirBtn);
+
+        // Crear el JLabel de resultado
+        resultadoLabel = new JLabel();
+        add(resultadoLabel);
+
+        setVisible(true);
     }
 
-    public void iniciar() {
-        // Crear la interfaz gráfica
-        frame = new JFrame("Cliente");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
-        frame.setLayout(new BorderLayout());
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        try {
+            entrada = new DataInputStream(socket.getInputStream());
+            salida = new DataOutputStream(socket.getOutputStream());
 
-        // Panel superior para el número
-        JPanel numeroPanel = new JPanel();
-        numeroPanel.setLayout(new FlowLayout());
-        JLabel numeroLabel = new JLabel("Ingresa un número:");
-        numeroTextField = new JTextField(10);
-        numeroPanel.add(numeroLabel);
-        numeroPanel.add(numeroTextField);
+            if (e.getSource() == guardarBtn) {
+                int numero = Integer.parseInt(textField.getText().toString());
+                salida.writeInt(numero);
+            } else if (e.getSource() == sumarBtn) {
+                salida.writeInt(1);
+                String resultado = entrada.readUTF();
+                resultadoLabel.setText("Operacion: " + resultado);
+            } else if (e.getSource() == restarBtn) {
+                salida.writeInt(2);
+                String resultado = entrada.readUTF();
+                resultadoLabel.setText("Operacion: " + resultado);
+            } else if (e.getSource() == multiplicarBtn) {
+                salida.writeInt(3);
+                String resultado = entrada.readUTF();
+                resultadoLabel.setText("Operacion: " + resultado);
+            } else if (e.getSource() == dividirBtn) {
+                salida.writeInt(4);
+                String resultado = entrada.readUTF();
+                resultadoLabel.setText("Operacion: " + resultado);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
-        // Panel central para los botones de operación
-        JPanel operacionesPanel = new JPanel();
-        operacionesPanel.setLayout(new FlowLayout());
-        sumaButton = new JButton("Suma");
-        restaButton = new JButton("Resta");
-        multiplicacionButton = new JButton("Multiplicación");
-        divisionButton = new JButton("División");
-        operacionesPanel.add(sumaButton);
-        operacionesPanel.add(restaButton);
-        operacionesPanel.add(multiplicacionButton);
-        operacionesPanel.add(divisionButton);
-
-        // Panel inferior para el resultado
-        JPanel resultadoPanel = new JPanel();
-        resultadoPanel.setLayout(new FlowLayout());
-        resultadoLabel = new JLabel("Resultado:");
-        resultadoPanel.add(resultadoLabel);
-
-        // Agregar los paneles al frame
-        frame.add(numeroPanel, BorderLayout.NORTH);
-        frame.add(operacionesPanel, BorderLayout.CENTER);
-        frame.add(resultadoPanel, BorderLayout.SOUTH);
-
-        // Registrar los ActionListeners para los botones de operación
-        sumaButton.addActionListener(new OperacionButtonListener("+"));
-        restaButton.addActionListener(new OperacionButtonListener("-"));
-        multiplicacionButton.addActionListener(new OperacionButtonListener("*"));
-        divisionButton.addActionListener(new OperacionButtonListener("/"));
-
-        // Mostrar el frame
-        frame.setVisible(true);
-
+    public static void main(String[] args) {
         try {
             socket = new Socket("localhost", 1025);
             System.out.println("Conectado al servidor.");
 
-            // Establecer los flujos de entrada/salida
-            entrada = new DataInputStream(socket.getInputStream());
-            salida = new DataOutputStream(socket.getOutputStream());
+            SwingUtilities.invokeLater(() -> {
+                new Cliente();
+            });
 
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    private class OperacionButtonListener implements ActionListener {
-        private String operacion;
-
-        public OperacionButtonListener(String operacion) {
-            this.operacion = operacion;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            try {
-                // Obtener el número ingresado por el usuario
-                int numero = Integer.parseInt(numeroTextField.getText());
-
-                // Enviar el número al servidor
-                salida.writeInt(numero);
-
-                // Enviar la operación seleccionada al servidor
-                salida.writeUTF(operacion);
-
-                // Recibir el resultado de la operación
-                String resultado = entrada.readUTF();
-                resultadoLabel.setText("Resultado: " + resultado);
-
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
         }
     }
 }
