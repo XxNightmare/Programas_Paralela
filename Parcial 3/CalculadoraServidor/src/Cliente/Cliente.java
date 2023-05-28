@@ -1,69 +1,69 @@
 package Cliente;
 
-import java.awt.FlowLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 
 public class Cliente extends JFrame implements ActionListener {
-    private JTextField textField;
-    private JButton guardarBtn, sumarBtn, restarBtn, multiplicarBtn, dividirBtn;
+
+    private JButton[] numerosBtn;
+    private JButton sumarBtn, restarBtn, multiplicarBtn, dividirBtn, guardarBtn; // Se eliminó el botón de resultado
+    private JTextField numeroTextField;
     private JLabel resultadoLabel;
     private DataInputStream entrada;
     private DataOutputStream salida;
     private static Socket socket;
+    private StringBuilder numeroActual;
+    private int opcionSeleccionada; // Variable para almacenar la opción de operación seleccionada
 
     public Cliente() {
+        opcionSeleccionada = 0; // Inicializar la variable en 0 (ninguna operación seleccionada)
         // Configurar la ventana
         setTitle("Calculadora");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(300, 200);
-        setLayout(new FlowLayout());
+        setSize(600, 500);
+        setLayout(new GridLayout(6, 3));
 
-        // Crear el JLabel inicial
-        JLabel tituloLabel = new JLabel("Calculadora");
-        add(tituloLabel);
+        // Crear el JTextField para mostrar los números ingresados
+        numeroTextField = new JTextField(20);
+        numeroTextField.setEditable(false);
+        add(numeroTextField);
 
-        // Crear el JTextField
-        textField = new JTextField(10);
-        add(textField);
+        // Crear los botones de números
+        numerosBtn = new JButton[10];
+        for (int i = 0; i < 10; i++) {
+            numerosBtn[i] = new JButton(String.valueOf(i));
+            numerosBtn[i].addActionListener(this);
+            add(numerosBtn[i]);
+        }
 
-        // Crear los botones
-        guardarBtn = new JButton("Guardar");
-        guardarBtn.addActionListener(this);
-        add(guardarBtn);
-
-        sumarBtn = new JButton("Sumar");
+        // Crear los botones de operaciones
+        sumarBtn = new JButton("+");
         sumarBtn.addActionListener(this);
         add(sumarBtn);
 
-        restarBtn = new JButton("Restar");
+        restarBtn = new JButton("-");
         restarBtn.addActionListener(this);
         add(restarBtn);
 
-        multiplicarBtn = new JButton("Multiplicar");
+        multiplicarBtn = new JButton("*");
         multiplicarBtn.addActionListener(this);
         add(multiplicarBtn);
 
-        dividirBtn = new JButton("Dividir");
+        dividirBtn = new JButton("/");
         dividirBtn.addActionListener(this);
         add(dividirBtn);
 
         // Crear el JLabel de resultado
         resultadoLabel = new JLabel();
         add(resultadoLabel);
+
+        numeroActual = new StringBuilder();
 
         setVisible(true);
     }
@@ -74,28 +74,66 @@ public class Cliente extends JFrame implements ActionListener {
             entrada = new DataInputStream(socket.getInputStream());
             salida = new DataOutputStream(socket.getOutputStream());
 
-            if (e.getSource() == guardarBtn) {
-                int numero = Integer.parseInt(textField.getText().toString());
+            JButton boton = (JButton) e.getSource();
+            String textoBoton = boton.getText();
+
+            if (esNumero(textoBoton)) {
+                numeroActual.append(textoBoton);
+                numeroTextField.setText(numeroActual.toString());
+            } else {
+                int numero = obtenerNumeroGuardado();
                 salida.writeInt(numero);
-            } else if (e.getSource() == sumarBtn) {
-                salida.writeInt(1);
-                String resultado = entrada.readUTF();
-                resultadoLabel.setText("Operacion: " + resultado);
-            } else if (e.getSource() == restarBtn) {
-                salida.writeInt(2);
-                String resultado = entrada.readUTF();
-                resultadoLabel.setText("Operacion: " + resultado);
-            } else if (e.getSource() == multiplicarBtn) {
-                salida.writeInt(3);
-                String resultado = entrada.readUTF();
-                resultadoLabel.setText("Operacion: " + resultado);
-            } else if (e.getSource() == dividirBtn) {
-                salida.writeInt(4);
-                String resultado = entrada.readUTF();
-                resultadoLabel.setText("Operacion: " + resultado);
+                opcionSeleccionada = obtenerOpcion(textoBoton); // Almacenar la nueva opción seleccionada
+                System.out.println("1.- "+opcionSeleccionada);
+                salida.writeInt(opcionSeleccionada);
+                String resultado = realizarOperacion(opcionSeleccionada, numero); // Realizar la operación
+                resultadoLabel.setText("Operación: " + resultado);
             }
         } catch (IOException ex) {
-            Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+        }
+    }
+
+    private int obtenerOpcion(String textoBoton) {
+        System.out.println(textoBoton);
+        if (textoBoton.equals("+")) {
+            return 1;
+        } else if (textoBoton.equals("-")) {
+            return 2;
+        } else if (textoBoton.equals("*")) {
+            return 3;
+        } else if (textoBoton.equals("/")) {
+            return 4;
+        } else {
+            return 0;
+        }
+    }
+
+    private boolean esNumero(String texto) {
+        try {
+            Integer.parseInt(texto);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private int obtenerNumeroGuardado() {
+        if (numeroActual.length() > 0) {
+            return Integer.parseInt(numeroActual.toString());
+        } else {
+            return 0; // Retorna 0 si no hay número ingresado
+        }
+    }
+
+    private String realizarOperacion(int opcion, int numero) {
+        try {
+            salida.writeInt(numero);
+            salida.writeInt(opcion);
+            return entrada.readUTF();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return "Error";
         }
     }
 

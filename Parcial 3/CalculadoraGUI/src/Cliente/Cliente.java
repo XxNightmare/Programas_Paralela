@@ -1,31 +1,38 @@
 package Cliente;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class Cliente {
-    public static void main(String[] args) {
-        final String HOST = "localhost";
-        final int PUERTO = 1025;
+public class Cliente extends JFrame implements ActionListener {
 
-        try {
-            Socket socket = new Socket(HOST, PUERTO);
-            ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
-            ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+    private CalculadoraGUI calculadoraGUI;
+    private Calculadora calculadora;
 
-            // Recibir la calculadora desde el servidor
-            CalculadoraGUI calculadoraGUI = (CalculadoraGUI) inputStream.readObject();
+    public Cliente() {
+        calculadoraGUI = new CalculadoraGUI(this);
+        calculadora = new Calculadora();
+        calculadora.setCliente(calculadoraGUI);
+    }
 
-            // Mostrar la calculadora
-            calculadoraGUI.setVisible(true);
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        JButton boton = (JButton) e.getSource();
+        String textoBoton = boton.getText();
 
-            inputStream.close();
-            outputStream.close();
-            socket.close();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+        if (calculadoraGUI.esNumero(textoBoton)) {
+            calculadoraGUI.agregarNumero(textoBoton);
+        } else {
+            int numero = calculadoraGUI.obtenerNumeroGuardado();
+            calculadora.realizarOperacion(textoBoton, numero);
         }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            Cliente cliente = new Cliente();
+            cliente.calculadoraGUI.setVisible(true);
+        });
     }
 }

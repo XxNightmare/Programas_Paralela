@@ -2,13 +2,14 @@ package Servidores;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Servidor {
+
+    static int resultado1 = 0;
+    static int resultado2 = 0;
 
     public static void main(String[] args) {
         try {
@@ -44,60 +45,74 @@ public class Servidor {
             int opcionUsuario2 = entradaUsuario2.readInt();
 
             // Realizar la operación seleccionada por el usuario 1
-            int resultado1 = 0;
             String operacion1 = "";
 
-            switch (opcionUsuario1) {
-                case 1:
-                    resultado1 = numero1 + numero2;
-                    operacion1 = "Suma";
-                    break;
-                case 2:
-                    resultado1 = numero1 - numero2;
-                    operacion1 = "Resta";
-                    break;
-                case 3:
-                    resultado1 = numero1 * numero2;
-                    operacion1 = "Multiplicación";
-                    break;
-                case 4:
-                    resultado1 = numero1 / numero2;
-                    operacion1 = "División";
-                    break;
-                default:
-                    System.out.println("Opción inválida del usuario 1");
-                    break;
+            if (opcionUsuario1 != 0) {
+                switch (opcionUsuario1) {
+                    case 1:
+                        resultado1 = numero1 + numero2;
+                        operacion1 = "Suma";
+                        break;
+                    case 2:
+                        resultado1 = numero1 - numero2;
+                        operacion1 = "Resta";
+                        break;
+                    case 3:
+                        resultado1 = numero1 * numero2;
+                        operacion1 = "Multiplicación";
+                        break;
+                    case 4:
+                        resultado1 = numero1 / numero2;
+                        operacion1 = "División";
+                        break;
+                    default:
+                        System.out.println("Opción inválida del usuario 1");
+                        break;
+                }
             }
 
             // Realizar la operación seleccionada por el usuario 2
-            int resultado2 = 0;
             String operacion2 = "";
 
-            switch (opcionUsuario2) {
-                case 1:
-                    resultado2 = numero1 + numero2;
-                    operacion2 = "Suma";
-                    break;
-                case 2:
-                    resultado2 = numero1 - numero2;
-                    operacion2 = "Resta";
-                    break;
-                case 3:
-                    resultado2 = numero1 * numero2;
-                    operacion2 = "Multiplicación";
-                    break;
-                case 4:
-                    resultado2 = numero1 / numero2;
-                    operacion2 = "División";
-                    break;
-                default:
-                    System.out.println("Opción inválida del usuario 2");
-                    break;
+            if (opcionUsuario2 != 0) {
+                switch (opcionUsuario2) {
+                    case 1:
+                        resultado2 = numero1 + numero2;
+                        operacion2 = "Suma";
+                        break;
+                    case 2:
+                        resultado2 = numero1 - numero2;
+                        operacion2 = "Resta";
+                        break;
+                    case 3:
+                        resultado2 = numero1 * numero2;
+                        operacion2 = "Multiplicación";
+                        break;
+                    case 4:
+                        resultado2 = numero1 / numero2;
+                        operacion2 = "División";
+                        break;
+                    default:
+                        System.out.println("Opción inválida del usuario 2");
+                        break;
+                }
             }
 
-            // Enviar el resultado de la operación a ambos usuarios
-            salidaUsuario1.writeUTF(" " + resultado1);
-            salidaUsuario2.writeUTF(" " + resultado2);
+            System.out.println(opcionUsuario1);
+            System.out.println(opcionUsuario2);
+
+            // Enviar el resultado de la operación a los usuarios correspondientes
+            if (opcionUsuario1 != 0) {
+                salidaUsuario1.writeUTF(operacion1 + ": " + resultado1);
+            } else {
+                salidaUsuario1.writeUTF("Operación no ejecutada");
+            }
+
+            if (opcionUsuario2 != 0) {
+                salidaUsuario2.writeUTF(operacion2 + ": " + resultado2);
+            } else {
+                salidaUsuario2.writeUTF("no ejecutada");
+            }
 
             // Cerrar conexiones
             usuario1.close();
