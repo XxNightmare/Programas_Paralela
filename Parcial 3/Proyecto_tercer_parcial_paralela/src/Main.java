@@ -6,21 +6,17 @@ import Normal.Analisis_texto_normal;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 
 public class Main extends JFrame implements ActionListener {
 
     private static final String SERVER_ADDRESS = "localhost";
     private static final int SERVER_PORT = 1025;
-    private static Socket socket;
-    private static PrintWriter out;
-    private static BufferedReader in;
+    private PalindromeServerInterface server;
     private String textoUnido = "";
 
     private JLabel inputLabel, titleLabel, outputLabel, txtlabel, txtNormal, txtExecuteService, txtForJoin, txtEspaciado;
@@ -99,25 +95,25 @@ public class Main extends JFrame implements ActionListener {
         ActualizarButton.setFont(new Font("Serif", Font.PLAIN, 17));
         ActualizarButton.addActionListener(this);
         panel.add(ActualizarButton);
-        
+
         // Boton Ejecutar el metodo Normal
         NormalButton = new JButton("Metodo normal");
         NormalButton.setFont(new Font("Serif", Font.PLAIN, 17));
         NormalButton.addActionListener(this);
         panel.add(NormalButton);
-        
+
         // Boton Limpiar
         clearButton = new JButton("Limpiar");
         clearButton.setFont(new Font("Serif", Font.PLAIN, 17));
         clearButton.addActionListener(this);
         panel.add(clearButton);
-        
+
         // Boton Execute Service
         executeButton = new JButton("Execute Service");
         executeButton.setFont(new Font("Serif", Font.PLAIN, 17));
         executeButton.addActionListener(this);
         panel.add(executeButton);
-        
+
         // Boton For Join
         joinButton = new JButton("For Join");
         joinButton.setFont(new Font("Serif", Font.PLAIN, 17));
@@ -160,6 +156,14 @@ public class Main extends JFrame implements ActionListener {
 
         // Agregar el panel a la ventana
         add(panel);
+
+        try {
+            Registry registry = LocateRegistry.getRegistry(SERVER_ADDRESS, SERVER_PORT);
+            server = (PalindromeServerInterface) registry.lookup("PalindromeServer");
+        } catch (RemoteException | NotBoundException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static void main(String[] args) {
@@ -247,23 +251,11 @@ public class Main extends JFrame implements ActionListener {
         // Guardar
         if (e.getSource() == GuardarButton) {
             String input = inputTextArea.getText().trim();
-
             try {
-                // Establecer la conexión con el servidor
-                socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
-                out = new PrintWriter(socket.getOutputStream(), true);
-                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                // Enviar solicitud al servidor
-                out.println("GUARDAR_TEXTO");
-                out.println(input);
-
-                // Leer respuesta del servidor
-                String response = in.readLine();
-
-                // Mostrar el texto unido en el JTextArea
-                Oracion_unida.setText(response);
+                server.guardarTexto(input);
+                Oracion_unida.setText(server.obtenerTextoActualizado());
                 JOptionPane.showMessageDialog(null, "Información almacenada");
-            } catch (IOException ex) {
+            } catch (RemoteException ex) {
                 ex.printStackTrace();
             }
         }
@@ -271,21 +263,13 @@ public class Main extends JFrame implements ActionListener {
         // Actualizar
         if (e.getSource() == ActualizarButton) {
             try {
-                // Establecer la conexión con el servidor
-                socket = new Socket(SERVER_ADDRESS, SERVER_PORT);
-                out = new PrintWriter(socket.getOutputStream(), true);
-                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                // Enviar solicitud al servidor
-                out.println("UNION_TEXTO_GETTER");
-                out.println("");
+                // Obtener el texto actualizado del servidor
+                String textoActualizado = server.obtenerTextoActualizado();
 
-                // Leer respuesta del servidor
-                String response = in.readLine();
-
-                // Mostrar el texto unido en el JTextArea
-                Oracion_unida.setText(response);
+                // Mostrar el texto actualizado en el JTextArea
+                Oracion_unida.setText(textoActualizado);
                 JOptionPane.showMessageDialog(null, "Información actualizada");
-            } catch (IOException ex) {
+            } catch (RemoteException ex) {
                 ex.printStackTrace();
             }
         }
