@@ -11,7 +11,6 @@ public class PalindromeServer extends UnicastRemoteObject implements PalindromeS
     private static final int PORT = 1025; // Puerto en el que se va a escuchar las conexiones
     private static int userCount = 0; // Contador de usuarios registrados
     private static List<String> textosAlmacenados = new ArrayList<>(); // Lista para almacenar los textos recibidos
-    private static List<PrintWriter> clientWriters = new ArrayList<>(); // Lista de los escritores de los clientes conectados
     private static String textoActualizar; // Texto actualizado a enviar a los clientes
 
     public PalindromeServer() throws RemoteException {
@@ -34,9 +33,6 @@ public class PalindromeServer extends UnicastRemoteObject implements PalindromeS
         System.out.println("Total usuarios registrados: " + userCount); // Imprime el número de usuarios registrados
         String textoUnido = MetUnirOraciones(texto); // Une el texto recibido con los textos almacenados previamente
         setTextoActualizar(textoUnido); // Establece el texto actualizado a enviar a los clientes
-        for (PrintWriter writer : clientWriters) { // Recorre la lista de escritores de los clientes
-            writer.println(textoUnido); // Envía el texto actualizado a cada cliente
-        }
     }
 
     @Override

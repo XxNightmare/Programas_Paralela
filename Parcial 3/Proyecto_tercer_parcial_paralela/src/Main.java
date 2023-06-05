@@ -178,6 +178,7 @@ public class Main extends JFrame implements ActionListener {
         if (e.getSource() == NormalButton) {
             long tiempo1 = System.currentTimeMillis();
             String input = Oracion_unida.getText().trim();
+            System.out.println(input);
             Analisis_texto_normal analyzer = new Analisis_texto_normal();
             // Separa el texto en palabras y las almacena en una lista
             java.util.List<String> words = analyzer.getWords(input);
@@ -211,6 +212,7 @@ public class Main extends JFrame implements ActionListener {
         // Execute Service
         if (e.getSource() == executeButton) {
             String input = Oracion_unida.getText().trim();
+            System.out.println(input);
             String Texto = "";
             // Mandar a llamar la funcion
             ExecuteService.Analisis_texto_executeService contador = new ExecuteService.Analisis_texto_executeService(input);
@@ -225,14 +227,21 @@ public class Main extends JFrame implements ActionListener {
                 }
             }
             long tiempo2 = System.currentTimeMillis() - tiempo1;
-            pal_enc.setText(Texto);
+            System.out.println(Texto);
             Cant_pal_enc.setText(String.valueOf(cont));
-            txtExecuteService.setText(String.valueOf(tiempo2 / 2 + " Milisegundos"));
+            if (cont > 0) {
+                pal_enc.setText(Texto);
+                txtExecuteService.setText(String.valueOf(tiempo2 / 2 + " Milisegundos"));
+            } else {
+                pal_enc.setText("ninguna");
+                JOptionPane.showMessageDialog(this, "No hay palindromos en esta oracion", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
 
         // For Join
         if (e.getSource() == joinButton) {
             String input = Oracion_unida.getText().trim();
+            System.out.println(input);
             long tiempo1 = System.currentTimeMillis();
             Analisis_texto_forkjoin analyzerfor = new Analisis_texto_forkjoin();
             // Separa el texto en palabras y las almacena en una lista
@@ -243,9 +252,14 @@ public class Main extends JFrame implements ActionListener {
             java.util.List<String> palindromos = analisis.getPalindromeWords(palabras);
 
             Cant_pal_enc.setText(String.valueOf(palindromos.size()));
-            pal_enc.setText(String.valueOf(palindromos));
-            long tiempo2 = System.currentTimeMillis() - tiempo1;
-            txtForJoin.setText(String.valueOf(tiempo2 + " Milisegundos"));
+            if (String.valueOf(palindromos).isEmpty()) {
+                pal_enc.setText(String.valueOf(palindromos));
+                long tiempo2 = System.currentTimeMillis() - tiempo1;
+                txtForJoin.setText(String.valueOf(tiempo2 + " Milisegundos"));
+            } else {
+                pal_enc.setText("ninguna");
+                JOptionPane.showMessageDialog(this, "No hay palindromos en esta oracion", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
 
         // Guardar
