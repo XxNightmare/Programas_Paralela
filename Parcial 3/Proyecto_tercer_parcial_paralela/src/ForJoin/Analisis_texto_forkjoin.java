@@ -12,6 +12,7 @@ public class Analisis_texto_forkjoin {
         // se recorre cada palabra en el arreglo "wordsArray".
         for (String word : wordsArray) {
             // cada palabra del arreglo "wordsArray" se agrega a la lista "wordsList".
+            System.out.print("");
             wordsList.add(word);
         }
         // devuelve la lista de palabras "wordsList"
