@@ -1,40 +1,35 @@
+import java.util.concurrent.Semaphore;
 
 public class Renos implements Runnable {
-
     private int id;
     private Santa_Claus santa;
-    private boolean waiting;
+    private Semaphore semaforo;
 
     public Renos(int id, Santa_Claus santa) {
         this.id = id;
         this.santa = santa;
-        this.waiting = false;
+        this.semaforo = santa.getSemaforo();
     }
 
     @Override
     public void run() {
         while (true) {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(1000); // Espera aleatoria de cada reno
+                semaforo.acquire(); // Adquiere el semaforo para garantizar la sincronización
 
-                synchronized (santa) {
-                    santa.addReno(id); // Añade al reno a la lista de espera de Santa
-                    System.out.println("Reno " + id + " esta esperando por la señal de Santa.");
+                
+                santa.addReno(id); // Añade al reno a la lista de espera de Santa
+                System.out.println("Ha llegado el Reno " + id + ".");
 
-                    while (!santa.canFlySleigh() && !waiting) {
-                        santa.wait(); // Espera la señal de Santa
-                    }
-
-                    if (santa.canFlySleigh()) {
-                        waiting = true;
-                        santa.flySleigh(); // Si hay 9 renos en la lista, Santa los lleva a volar el trineo
-                        waiting = false;
-                        santa.notifyAll(); // Despierta a todos los hilos en espera
-                    }
+                if (santa.canFlySleigh()) {
+                    santa.flySleigh(); // Si ya han llegado los 9 renos, Santa sale a repartir regalos
                 }
+
+                semaforo.release(); // Libera el semaforo
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-    }
+    }    
 }
