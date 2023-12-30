@@ -139,7 +139,7 @@ public class Cliente extends JFrame implements ActionListener {
 
     public static void main(String[] args) {
         try {
-            socket = new Socket("192.168.137.175", 1025);
+            socket = new Socket("localhost", 1025);
             System.out.println("Conectado al servidor.");
 
             SwingUtilities.invokeLater(() -> {

@@ -9,7 +9,7 @@ public class clienteRMI {
             String nombre = JOptionPane.showInputDialog("Ingresa tu nombre");
             String nom = nombre;
 
-            Registry rmi = LocateRegistry.getRegistry("192.168.252.114", 1025);
+            Registry rmi = LocateRegistry.getRegistry("192.168.242.249", 1025);
             chatServidor servidor = (chatServidor) rmi.lookup("Chat");
             new Thread(new implementationClienteChat(nom, servidor)).start();
         } catch (Exception e) {
